@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE mycat:schema SYSTEM "schema.dtd">
+<mycat:schema xmlns:mycat="http://io.mycat/">
+
+	<schema name="v_mysql" checkSQLschema="false" sqlMaxLimit="100" dataNode="dn1">
+	</schema>
+	<dataNode name="dn1" dataHost="mysql1" database="db1" />
+	<dataHost name="mysql1" maxCon="1000" minCon="10" balance="3"
+			  writeType="0" dbType="mysql" dbDriver="native" switchType="1"  slaveThreshold="100">
+		<heartbeat>select user()</heartbeat>
+		<writeHost host="hostM1" url="192.168.1.23:3301" user="root"
+				   password="123456">
+			<readHost host="hostS1" url="192.168.1.23:3302" user="readuser" password="123456" />
+			<readHost host="hostS2" url="192.168.1.23:3303" user="readuser" password="123456" />
+		</writeHost>
+	</dataHost>
+</mycat:schema>

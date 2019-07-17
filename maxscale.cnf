@@ -1,0 +1,46 @@
+[maxscale]
+threads=auto				#运行的线程的数量
+
+[server1]					#定义数据库服务器
+type=server
+address=10.10.10.101
+port=3306
+protocol=MySQLBackend		#后端数据库
+[server2]
+type=server
+address=10.10.10.102
+port=3306
+protocol=MySQLBackend
+
+[MySQL Monitor]				#定义监控的数据库服务器
+type=monitor
+module=mysqlmon
+servers=server1,server2		#监控的数据库列表，不能写ip
+user=scalemon				#监视数据库服务器时连接的用户名scalemon
+passwd=123456				#密码123456
+monitor_interval=10000		#监视的频率 单位为秒
+
+[Read-Write Service]		#定义读写分离服务
+type=service
+router=readwritesplit
+servers=server1,server2
+user=maxscaled				#用户名 验证连接代理服务时访问数据库服务器的用户是否存在
+passwd=123456
+max_slave_connections=100%
+
+[MaxAdmin Service]			#定义管理服务
+type=service
+router=cli
+
+[Read-Write Listener]		#读写服务使用的端口号
+type=listener
+service=Read-Write Service
+protocol=MySQLClient
+port=4006
+
+[MaxAdmin Listener]			#管理服务使用的端口号
+type=listener
+service=MaxAdmin Service
+protocol=maxscaled
+socket=default
+port=4099					#手动添加，不指定时使用的是默认端口在启动服务以后可以知道默认端口是多少
